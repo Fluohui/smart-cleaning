@@ -22,7 +22,8 @@ env/
 # Logs
 logs/
 
-# Stale ChromaDB artifacts
+# ChromaDB artifacts
+chroma_db/
 agent/chroma_db/
 rag/chroma_db/
 agent/tools/chroma_db/
