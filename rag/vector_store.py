@@ -5,7 +5,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from utils.config_handler import chroma_conf
 from model.factory import embed_model
 from utils.path_tool import get_abs_path
-from utils.file_handler import txt_loader, pdf_loader, listdir_with_allowed_type, get_file_md5_hex
+from utils.file_handler import txt_loader, pdf_loader, listdir_with_allowed_types, get_file_md5_hex
 from utils.logger_handler import logger
 
 class VectorStoreService:
@@ -13,7 +13,7 @@ class VectorStoreService:
         self.vector_story = Chroma(
             collection_name=chroma_conf["collection_name"],
             embedding_function=embed_model,
-            persist_directory=chroma_conf["persist_directory"]
+            persist_directory=get_abs_path(chroma_conf["persist_directory"]),
         )
 
         self.spliter = RecursiveCharacterTextSplitter(
@@ -60,7 +60,7 @@ class VectorStoreService:
 
             return []
 
-        allowed_files_path: list[str] = listdir_with_allowed_type(
+        allowed_files_path: list[str] = listdir_with_allowed_types(
             get_abs_path(chroma_conf["data_path"]),
             tuple(chroma_conf["allow_knowledge_file_type"]),
         )
