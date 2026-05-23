@@ -40,7 +40,7 @@ def load_report_prompts():
     try:
         return open(report_prompt_path, "r", encoding="utf-8").read()
     except Exception as e:
-        logger.error(f"{load_system_prompts}解析报告生成提示词出错，{str(e)}")
+        logger.error(f"{load_report_prompts}解析报告生成提示词出错，{str(e)}")
         raise e
 
 

@@ -1,4 +1,32 @@
+# Python
 __pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
 .venv/
-*.pyc
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+
+# Logs
+logs/
+
+# Stale ChromaDB artifacts
+agent/chroma_db/
+rag/chroma_db/
+agent/tools/chroma_db/
+
+# OS
 .DS_Store
+Thumbs.db
