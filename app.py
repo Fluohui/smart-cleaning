@@ -1,14 +1,19 @@
 import time
 
 import streamlit as st
-from agent.react_agent import ReactAgent
+from langchain_core.messages import HumanMessage
 
-#标题
-st.title("智能扫地机器人客服")
+from agent.multi_agent import multi_agent_app
+from utils.logger_handler import get_logger
+
+logger = get_logger("app")
+
+st.set_page_config(page_title="智能清洁客服", page_icon="🤖")
+st.title("智能清洁多智能体客服")
 st.divider()
 
-if "agent" not in st.session_state:
-    st.session_state["agent"] = ReactAgent()
+if "thread_id" not in st.session_state:
+    st.session_state["thread_id"] = f"user_session_{int(time.time())}"
 
 if "message" not in st.session_state:
     st.session_state["message"] = []
@@ -16,26 +21,42 @@ if "message" not in st.session_state:
 for message in st.session_state["message"]:
     st.chat_message(message["role"]).write(message["content"])
 
-prompt = st.chat_input()
+st.sidebar.subheader("运行状态")
+st.sidebar.info(f"会话线程 ID:\n`{st.session_state['thread_id']}`")
+
+prompt = st.chat_input("您好！")
 
 if prompt:
     st.chat_message("user").write(prompt)
     st.session_state["message"].append({"role": "user", "content": prompt})
 
-    response_messages = []
-    with st.spinner("智能客服思考中..."):
-        res_stream = st.session_state["agent"].execute_stream(prompt)
+    with st.spinner("正在处理，请稍候..."):
+        agent_config = {"configurable": {"thread_id": st.session_state["thread_id"]}}
 
-        def capture(generator, cache_list):
-            for chunk in generator:
-                cache_list.append(chunk)
-                for char in chunk:
+        try:
+            final_state = multi_agent_app.invoke(
+                {
+                    "messages": [HumanMessage(content=prompt)],
+                    "expert_verdict": "",
+                },
+                config=agent_config,
+            )
+
+            final_reply = final_state["messages"][-1].content
+            expert_verdict = final_state.get("expert_verdict", "")
+
+            def stream_generator(text):
+                for char in text:
                     time.sleep(0.01)
                     yield char
 
-        st.chat_message("assistant").write_stream(capture(res_stream, response_messages))
-        st.session_state["message"].append({"role": "assistant", "content": response_messages[-1]})
-        st.rerun()
+            st.chat_message("assistant").write_stream(stream_generator(final_reply))
+            st.session_state["message"].append({"role": "assistant", "content": final_reply})
 
+            if expert_verdict:
+                with st.expander("查看定损专家鉴定结论"):
+                    st.info(expert_verdict)
 
-# .\.venv\Scripts\Activate.ps1
+        except Exception:
+            logger.exception("Agent invoke failed")
+            st.error("抱歉，系统暂时无法处理您的请求，请稍后重试或联系人工客服。")

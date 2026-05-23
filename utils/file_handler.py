@@ -21,12 +21,6 @@ def get_file_md5_hex(filepath: str):
         with open(filepath, "rb") as f:
             while chunk := f.read(chunk_size):
                 md5_obj.update(chunk)
-            """
-             chunk = f.read(chunk_size)
-             while chunk:
-                md5_obj.update(chunk)
-                chunk = f.read(chunk_size)
-            """
 
             md5_hex = md5_obj.hexdigest()
             return md5_hex
@@ -36,11 +30,11 @@ def get_file_md5_hex(filepath: str):
         return None
 
 # 判断是否是允许的文件类型，并整理文件列表
-def listdir_with_allowed_type(path: str, allowed_types: tuple[str]):
+def listdir_with_allowed_types(path: str, allowed_types: tuple[str]):
     files = []
 
     if not os.path.isdir(path):
-        logger.error(f"[listdir_with_allowed_type]{path}不是文件夹")
+        logger.error(f"[listdir_with_allowed_types]{path}不是文件夹")
         return tuple(files)
 
     for f in os.listdir(path):

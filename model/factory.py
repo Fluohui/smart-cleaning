@@ -1,4 +1,5 @@
-from abc import abstractmethod, ABC
+import os
+from abc import ABC, abstractmethod
 from typing import Optional
 
 from langchain_community.chat_models import ChatTongyi
@@ -7,6 +8,20 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.language_models import BaseChatModel
 
 from utils.config_handler import rag_conf
+from utils.logger_handler import get_logger
+
+logger = get_logger("factory")
+
+
+def _validate_api_key():
+    if not os.getenv("DASHSCOPE_API_KEY"):
+        logger.error("DASHSCOPE_API_KEY 未设置")
+        raise RuntimeError(
+            "DASHSCOPE_API_KEY 未设置，请通过环境变量或 .env 文件配置。"
+        )
+
+
+_validate_api_key()
 
 
 class BaseModelFactory(ABC):
