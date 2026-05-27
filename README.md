@@ -18,7 +18,7 @@
 
 | 层级 | 技术 |
 |------|------|
-| LLM | 阿里云 Qwen3-Max（ChatTongyi） |
+| LLM | DeepSeek V4 Flash（ChatOpenAI） |
 | Embedding | DashScope text-embedding-v4 |
 | Agent 框架 | LangGraph StateGraph |
 | 向量数据库 | ChromaDB |
@@ -106,7 +106,8 @@ START → front_desk → router (LLM 语义分类)
 - Python 3.10+
 - PostgreSQL 16+（LangGraph 状态持久化）
 - Redis 7+（会话缓存）
-- 阿里云 [DashScope](https://dashscope.console.aliyun.com/) API Key
+- 阿里云 [DashScope](https://dashscope.console.aliyun.com/) API Key（Embedding）
+- DeepSeek [API Key](https://platform.deepseek.com/)（LLM）
 
 ### 安装
 
@@ -123,7 +124,7 @@ pip install -r requirements.txt
 
 ```bash
 cp .env.example .env
-# 编辑 .env，填入 DASHSCOPE_API_KEY
+# 编辑 .env，填入 DASHSCOPE_API_KEY 和 DEEPSEEK_API_KEY
 ```
 
 确保 PostgreSQL 和 Redis 已启动，库表会自动创建。
